@@ -1,228 +1,87 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xuv Rahee - Advanced Fleet Control</title>
-<!-- Yahan Part 1 Khatam Hua. Ab bina gap diye iske neeche Part 2 paste karein -->
+    <title>Firebase RTDB Write Demo</title>
     <style>
-        :root {
-            --primary: #32befa;
-            --primary-dark: #009ad9;
-            --bg-dark: #121824;
-            --card-bg: #1e2640;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --danger: #ef4444;
-            --success: #10b981;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-light); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: flex-start; }
-        
-        /* Dashboard App Entrance Animation */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .app-container { 
-            width: 100%; max-width: 650px; background: var(--card-bg); padding: 30px; 
-            border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
-            animation: fadeInUp 0.6s ease-out; border-top: 5px solid var(--primary);
-        }
-
-        .header { text-align: center; margin-bottom: 25px; }
-        .header h1 { font-size: 2.2rem; color: var(--primary); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
-        .header p { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media (max-width: 500px) { .grid-2 { grid-template-columns: 1fr; } }
-
-        .section { 
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            padding: 20px; border-radius: 12px; margin-bottom: 20px; transition: all 0.3s ease;
-        }
-        .section:hover { border-color: rgba(50, 190, 250, 0.3); background: rgba(255,255,255,0.04); }
-        .section-title { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 15px; }
-
-        label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        input, select { 
-            width: 100%; padding: 12px; background: #121824; border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 8px; color: #fff; font-size: 0.95rem; margin-bottom: 15px; transition: all 0.3s;
-        }
-        input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px rgba(50,190,250,0.2); }
-
-        button { 
-            width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; 
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: inline-block;
-        }
-        button:active { transform: scale(0.98); }
-        .btn-primary { background: var(--primary); color: #121824; }
-        .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 0 15px rgba(50,190,250,0.4); }
-        .btn-danger { background: transparent; border: 2px solid var(--danger); color: var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(239,68,68,0.4); }
+        body { font-family: Arial, sans-serif; margin: 50px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { padding: 8px; width: 250px; }
+        button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="header">
-        <h1>Xuv Rahee</h1>
-        <p>Advanced Live Fleet & Trip Tracking Dashboard</p>
+    <h2>Bhai, Data Firebase Me Write Karo</h2>
+    
+    <div class="form-group">
+        <label for="name">Naam:</label>
+        <input type="text" id="name" placeholder="Apna naam daalo">
     </div>
 
-    <!-- Section 1: Live Params & Fuel -->
-    <div class="section">
-        <div class="section-title">📊 Current Status & Location</div>
-        <div class="grid-2">
-            <div>
-                <label for="fuel">Available Fuel (KM):</label>
-                <input type="number" id="fuel" placeholder="e.g. 340">
-            </div>
-            <div>
-                <label for="citySelect">Current City Location:</label>
-                <select id="citySelect">
-                    <option value="city_1">Mumbai</option><option value="city_2">Delhi</option>
-                    <option value="city_3">Bangalore</option><option value="city_4">Hyderabad</option>
-                    <option value="city_5">Ahmedabad</option><option value="city_6">Chennai</option>
-                    <option value="city_7">Kolkata</option><option value="city_8">Surat</option>
-                    <option value="city_9">Pune</option><option value="city_10">Jaipur</option>
-                    <option value="city_11">Lucknow</option><option value="city_12">Kanpur</option>
-                    <option value="city_13">Nagpur</option><option value="city_14">Indore</option>
-                    <option value="city_15">Thane</option><option value="city_16">Bhopal</option>
-                    <option value="city_17">Visakhapatnam</option><option value="city_18">Pimpri-Chinchwad</option>
-                    <option value="city_19">Patna</option><option value="city_20">Vadodara</option>
-                    <option value="city_21">Ghaziabad</option><option value="city_22">Ludhiana</option>
-                    <option value="city_23">Agra</option><option value="city_24">Nashik</option>
-                    <option value="city_25">Ranchi</option><option value="city_26">Faridabad</option>
-                    <option value="city_27">Meerut</option><option value="city_28">Rajkot</option>
-                    <option value="city_29">Kalyan-Dombivli</option><option value="city_30">Vasai-Virar</option>
-                </select>
-            </div>
-        </div>
-        <button class="btn-primary" id="updateFuelCityBtn">Update Fuel & Location</button>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" placeholder="Apna email daalo">
     </div>
 
-    <!-- Section 2: Driver Duty -->
-    <div class="section">
-        <div class="section-title">👤 Driver Duty Update</div>
-        <label for="driverName">Active Driver Name:</label>
-        <input type="text" id="driverName" placeholder="Enter driver's name">
-        <button class="btn-primary" id="updateDriverBtn">Change / Update Driver</button>
-    </div>
+    <button id="submitBtn">Database Me Save Karo</button>
 
-    <!-- Section 3: Dual Passengers Form -->
-    <div class="section">
-        <div class="section-title">👥 Passenger Manifest & Drop Logs</div>
-        
-        <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom: 15px;">
-            <label for="passenger1">Passenger 1 Name:</label>
-            <input type="text" id="passenger1" placeholder="Passenger 1 Name">
-            <button class="btn-danger" id="dropP1Btn">Drop Passenger 1</button>
-        </div>
+    <!-- Firebase SDK Modules -->
+    <script type="module">
+        // Firebase libraries import karein
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, push } from "https://gstatic.com";
 
-        <div>
-            <label for="passenger2">Passenger 2 Name:</label>
-            <input type="text" id="passenger2" placeholder="Passenger 2 Name">
-            <button class="btn-danger" id="dropP2Btn">Drop Passenger 2</button>
-        </div>
-    </div>
-</div>
-<!-- Yahan Part 2 Khatam Hua. Ab bina gap diye iske neeche Part 3 paste karein -->
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+        // TODO: Apne Firebase Console se ye config copy karke yahan paste karein
+        const firebaseConfig = {
+  apiKey: "AIzaSyCHWFOq27Q3gkMhJt8rXLsyLj6T2yzn77I",
+  authDomain: "rahee-xuv.firebaseapp.com",
+  databaseURL: "https://rahee-xuv-default-rtdb.firebaseio.com",
+  projectId: "rahee-xuv",
+  storageBucket: "rahee-xuv.firebasestorage.app",
+  messagingSenderId: "956979051682",
+  appId: "1:956979051682:web:4fbfa72e130085d4dd2bfb"
+};
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyCHWFOq27Q3gkMhJt8rXLsyLj6T2yzn77I",
-    authDomain: "rahee-xuv.firebaseapp.com",
-    databaseURL: "https://rahee-xuv-default-rtdb.firebaseio.com",
-    projectId: "rahee-xuv",
-    storageBucket: "rahee-xuv.firebasestorage.app",
-    messagingSenderId: "956979051682",
-    appId: "1:956979051682:web:4fbfa72e130085d4dd2bfb"
-  };
+        // Firebase Initialize karein
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
+        // HTML elements ko select karein
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const submitBtn = document.getElementById('submitBtn');
 
-    // Dynamic Live Timestamp Helper Generator 
-    function getTimestamp() {
-        const now = new Date();
-        return `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    }
+        // Button click event listener
+        submitBtn.addEventListener('click', () => {
+            const name = nameInput.value;
+            const email = emailInput.value;
 
-    // Input Selectors Form Elements
-    const fuelInput = document.getElementById('fuel');
-    const citySelect = document.getElementById('citySelect');
-    const driverInput = document.getElementById('driverName');
-    const p1Input = document.getElementById('passenger1');
-    const p2Input = document.getElementById('passenger2');
+            if(name === '' || email === '') {
+                alert("Bhai, dono fields bharna zaroori hai!");
+                return;
+            }
 
-    // 1. Sync Live Fuel & Masked Location Code 
-    document.getElementById('updateFuelCityBtn').addEventListener('click', () => {
-        if(!fuelInput.value) return alert("Kripya Fuel parameters load karein!");
-        
-        set(ref(database, 'xuv_rahee/live_status'), {
-            fuel_km: fuelInput.value,
-            location_code: citySelect.value,
-            last_updated: getTimestamp()
-        }).then(() => alert("Fuel & Location encrypted data synced!")).catch(e => alert(e.message));
-    });
-
-    // 2. Change Driver Action (Updates active driver + pushes data into absolute tracking list)
-    document.getElementById('updateDriverBtn').addEventListener('click', () => {
-        const driverName = driverInput.value.trim();
-        if(!driverName) return alert("Driver identity verification needed!");
-
-        const timeNow = getTimestamp();
-        const locCode = citySelect.value;
-
-        // Node 1: Current Live Driver
-        set(ref(database, 'xuv_rahee/current_driver'), {
-            name: driverName,
-            assigned_at: timeNow,
-            assigned_at_city_code: locCode
+            // 'users' node ke andar auto-generated ID ke sath data push hoga
+            push(ref(db, 'users'), {
+                username: name,
+                email: email,
+                timestamp: Date.now()
+            })
+            .then(() => {
+                alert("Mubarak ho bhai! Data successfully save ho gaya.");
+                // Form clear karne ke liye
+                nameInput.value = '';
+                emailInput.value = '';
+            })
+            .catch((error) => {
+                console.error("Write fail ho gaya:", error);
+                alert("Error aaya bhai! Console check karo.");
+            });
         });
-
-        // Node 2: Driver Change Logs Book (Privacy Managed)
-        const historyRef = push(ref(database, 'xuv_rahee/driver_change_history'));
-        set(historyRef, {
-            driver_name: driverName,
-            changed_at_time: timeNow,
-            changed_at_city_code: locCode
-        }).then(() => {
-            alert(`Driver sequence changed to ${driverName}! Secure logs updated.`);
-        }).catch(e => alert(e.message));
-    });
-
-    // Core Shared Engine logic for Dropping passengers
-    function logPassengerDrop(passengerNameElement) {
-        const pName = passengerNameElement.value.trim();
-        if(!pName) return alert("Passenger identity name slot is empty!");
-
-        const dropTime = getTimestamp();
-        const dropCityCode = citySelect.value;
-
-        const dropLogRef = push(ref(database, 'xuv_rahee/dropped_passengers_logs'));
-        set(dropLogRef, {
-            passenger_name: pName,
-            dropped_city_code: dropCityCode,
-            time_of_drop: dropTime
-        }).then(() => {
-            alert(`Drop verified: ${pName} detached at Code [${dropCityCode}] on ${dropTime}`);
-            passengerNameElement.value = ""; // Auto reset UI box
-        }).catch(e => alert(e.message));
-    }
-
-    // 3. Dual Engine Click Listeners For Individual Drop-offs
-    document.getElementById('dropP1Btn').addEventListener('click', () => logPassengerDrop(p1Input));
-    document.getElementById('dropP2Btn').addEventListener('click', () => logPassengerDrop(p2Input));
-</script>
-
+    </script>
 </body>
 </html>
